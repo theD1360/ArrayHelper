@@ -1,5 +1,4 @@
-Array Helper
-============
+ArrayHelper
+===========
 
-Wrapper class for php array methods
-
+PHP array helper/wrapper class
