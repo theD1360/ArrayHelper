@@ -149,6 +149,23 @@ class Arr implements arrayaccess
             }
         });
     }
+    // checks to see if the arguments given exist using intersect
+    // basically a fancy in_array that takes multiple vals 
+    public function contains()
+    {
+        $args = func_get_args();
+        return (bool) $this->intersect($args);
+    }
+    public function intersect($args)
+    {
+        $data = $this->toArray();
+        return array_intersect($data, $args);
+    }    
+    public function diff($args)
+    {
+        $data = $this->toArray();
+        return array_diff($data, $args);
+    }    
     public function pop()
     {
         return array_pop($this->data);
