@@ -20,7 +20,12 @@ class Arr implements arrayaccess
     protected $data = [];
     public function __construct($array = [])
     {
+        if(is_array($array))
             $this->build($array);
+
+        if(is_string($array))
+            $this->fromJSON($array);
+
     }
     public function build($array = [])
     {
@@ -55,6 +60,11 @@ class Arr implements arrayaccess
     }
     public function set($key, $val)
     {
+        if(is_a($val, "Utilities\Arr")){
+             $this->data[$key] = $val;
+             return $this;
+        }
+
         if (method_exists($val, "toArray")) {
             $val = $val->toArray();
         }
@@ -63,6 +73,8 @@ class Arr implements arrayaccess
         } else {
             $this->data[$key] = $val;
         }
+
+        return $this;
     }
     public function has($key = null)
     {
@@ -78,7 +90,7 @@ class Arr implements arrayaccess
     }
     public function get($key)
     {
-        if (isset($this->data[$key])) {
+        if ($this->has($key)) {
             return  $this->data[$key];
         }
     }
@@ -102,10 +114,10 @@ class Arr implements arrayaccess
     {
         return $this->data[$index];
     }
-    public function slice($offset)
+    public function slice($offset, $length = null, $preserve_keys = false)
     {
-        $slice = array_slice($this->data, $offset);
-        return new arr($slice);
+        $slice = array_slice($this->data, $offset, $length, $preserve_keys);
+        return new Arr($slice);
     }
     public function remove($index = null)
     {
@@ -209,6 +221,10 @@ class Arr implements arrayaccess
     {
         return array_sum($this->data);
     }
+    public function avg()
+    {
+        return $this->sum()/$this->length();
+    }
     public function next()
     {
         return next($this->data);
@@ -247,6 +263,7 @@ class Arr implements arrayaccess
             $this->data[$offset] = $value;
         }
     }
+
     public function offsetExists($offset)
     {
         return isset($this->data[$offset]);
@@ -258,6 +275,19 @@ class Arr implements arrayaccess
     public function offsetGet($offset)
     {
         return isset($this->data[$offset]) ? $this->data[$offset] : null;
+    }
+    // Takes this objects toArray value and merges it with the given
+    // array then rebuilds the data array. Returns itself
+    public function merge($arr = [])
+    {
+        $newData = array_merge($this->toArray(), $arr);
+        return $this->reset($newData);
+    }
+
+    // Creates a copy of the current object
+    public function copy()
+    {
+        return new Arr($this->toArray());
     }
     public function toArray()
     {
@@ -274,6 +304,12 @@ class Arr implements arrayaccess
     {
         return (object) $this->toArray();
     }
+    
+    public function fromJSON($json = "[]")
+    {
+        $this->build(json_decode($json, true));
+    }
+
     public function toJSON()
     {
         $var = $this->toArray();
