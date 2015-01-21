@@ -108,6 +108,10 @@ class Arr implements \ArrayAccess, \Countable, \IteratorAggregate
     {
         return count($this->data);
     }
+    public function count()
+    {
+        return $this->length;
+    }    
     public function at($index = null)
     {
         return $this->data[$index];
