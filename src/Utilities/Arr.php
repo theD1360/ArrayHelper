@@ -13,9 +13,7 @@
  *
  */
 
-use \arrayaccess;
-
-class Arr implements arrayaccess
+class Arr implements \ArrayAccess, \Countable, \IteratorAggregate
 {
     protected $data = [];
     public function __construct($array = [])
@@ -319,4 +317,10 @@ class Arr implements arrayaccess
     {
         return $this->toJSON();
     }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->data);
+    }
+
 }
